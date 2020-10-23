@@ -44,4 +44,8 @@ function calculate(salary: number): { net: number, tax: number } {
         tax
     }
 }
+
+function simplify(n: number): number {
+    return Math.floor(parseFloat(n.toFixed(2)) + 0.5)
+}
 ```
