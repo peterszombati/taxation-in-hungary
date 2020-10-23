@@ -1,0 +1,23 @@
+{
+  "name": "taxation-in-hungary",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peterszombati/taxation-in-hungary.git"
+  },
+  "author": "Peter Szombati",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/peterszombati/taxation-in-hungary/issues"
+  },
+  "homepage": "https://github.com/peterszombati/taxation-in-hungary#readme",
+  "devDependencies": {
+    "typescript": "^3.9.7"
+  }
+}
