@@ -1,48 +1,93 @@
-export function simplify(n: number): number {
-    return Math.floor(parseFloat(n.toFixed(2)) + 0.5)
+interface TaxRates {
+  [name: string]: {
+    type: 'gross'
+    rate: number
+    partOfGross: boolean
+  }
 }
 
-export function calculate(salary: number): { net: number, tax: number } {
-    const rates: any = {
-        socialContributionTax: {
-            type: 'gross',
-            rate: 0.155,// 15.5%
-            partOfGross: false
-        },
-        vocationalTrainingContribution: {
-            type: 'gross',
-            rate: 0.015,// 1.5%
-            partOfGross: false
-        },
-        personalIncomeTax: {
-            type: 'gross',
-            rate: 0.15,// 15%
-            partOfGross: true
-        },
-        socialInsuranceTax: {
-            type: 'gross',
-            rate: 0.185,// 18.5%
-            partOfGross: true
-        },
+// https://www.nav.gov.hu/nav/ado/szocialis_hozzajarulasi_ado/ado_merteke.html
+function getSocialContributionTaxRate(year: number) {
+  switch (year) {
+    case 2022:
+      return 0.15
+    case 2021:
+      return 0.155
+    case 2020:
+      return 0.155
+    case 2019:
+      return 0.175
+    case 2018:
+      return 0.195
+    case 2017:
+      return 0.22
+    case 2016:
+      return 0.27
+    case 2015:
+      return 0.27
+    case 2014:
+      return 0.27
+    case 2013:
+      return 0.27
+    case 2012:
+      return 0.27
+    default:
+      if (year >= 2022) {
+        return 0.15
+      } else {
+        return 0.27
+      }
+  }
+}
+
+export function calculate(params: {
+  wageCost: number
+  year: number
+}): { net: number, tax: number } {
+  const {wageCost, year} = params
+  const taxRates: TaxRates = {
+    socialContributionTax: {
+      type: 'gross',
+      rate: getSocialContributionTaxRate(year),
+      partOfGross: false
+    },
+    personalIncomeTax: {
+      type: 'gross',
+      rate: 0.15,// 15%
+      partOfGross: true
+    },
+    socialInsuranceTax: {
+      type: 'gross',
+      rate: 0.185,// 18.5%
+      partOfGross: true
+    },
+  }
+
+  if (year < 2022) {
+    taxRates.vocationalTrainingContribution = {
+      type: 'gross',
+      rate: 0.015,// 1.5%
+      partOfGross: false
     }
+  }
 
-    const p = parseFloat(Object.keys(rates)
-        .map(k => rates[k])
-        .filter(i => i.partOfGross === false)
-        .map(i => i.rate)
-        .reduce((a,b) => a + b, 0)
-        .toFixed(2))
+  const p = parseFloat(Object.keys(taxRates)
+    .map(k => taxRates[k])
+    .filter(i => i.partOfGross === false)
+    .map(i => i.rate)
+    .reduce((a, b) => a + b, 0)
+    .toFixed(2))
 
-    const gross = simplify(salary / (1 + p))
+  const gross = Math.round(wageCost / (1 + p))
 
-    const tax = Object.keys(rates)
-        .map(k => simplify(rates[k].rate * gross))
-        .reduce((a,b) => a + b, 0)
+  const tax = Object.keys(taxRates)
+    .map(k => Math.round(taxRates[k].rate * gross))
+    .reduce((a, b) => a + b, 0)
 
-    const net = salary - tax
+  const net = wageCost - tax
 
-    return {
-        net,
-        tax
-    }
+  return {
+    net,
+    tax
+  }
 }
